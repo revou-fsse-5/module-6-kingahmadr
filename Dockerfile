@@ -10,7 +10,7 @@ ENV PATH="$PATH:$POETRY_HOME/bin"
 FROM base AS build
 WORKDIR /app
 COPY pyproject.toml .
-RUN poetry lock --no-update && poetry install --only=main
+RUN poetry lock --no-update && poetry install --only=app
 COPY . .
 
 # Runtime stage
