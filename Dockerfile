@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm AS base
+FROM python:3.11-alpine AS base
 # Install Poetry
 RUN pip install poetry
 ENV POETRY_HOME="/opt/poetry" \
