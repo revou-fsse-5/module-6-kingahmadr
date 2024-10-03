@@ -11,9 +11,24 @@ from src.router.Swagger import SwaggerView
 
 app = Flask(__name__)
 swagger = Swagger(app)
+# Swagger config for securityDefinitions
+# app.config['SWAGGER'] = {
+#     'securityDefinitions': {
+#         'Bearer': {
+#             'type': 'apiKey',
+#             'name': 'Authorization',
+#             'in': 'header',
+#             'description': 'Enter JWT with **Bearer** prefix, e.g., "Bearer {token}"'
+#         }
+#     },
+#     'security': [
+#         {
+#             'Bearer': []
+#         }
+#     ]
+# }
 load_dotenv()
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://postgres.rxagpymjyxdlnaweylcz:{os.getenv('PASSWORD')}@aws-0-us-east-1.pooler.supabase.com:6543/postgres"
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('USER_DB')}:{os.getenv('PASSWORD_DB')}@{os.getenv('HOST_DB')}:{os.getenv('PORT_DB')}/{os.getenv('DBNAME')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

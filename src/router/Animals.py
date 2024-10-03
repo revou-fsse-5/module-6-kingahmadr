@@ -5,7 +5,6 @@ from src.models.Models import db, AnimalModel
 class AnimalView(MethodView):
     @swag_from({
         'tags': ['Animal'],
-        # 'security': [ 'Bearer': [] ],
         'parameters': [
             {
                 'name': 'animal_id',
@@ -15,6 +14,7 @@ class AnimalView(MethodView):
                 'description': 'ID of the animal to retrieve'
             }
         ],
+        # 'security': [{'Bearer': []}],
         'responses': {
             200: {
                 'description': 'Animal(s) retrieved successfully',
@@ -72,6 +72,12 @@ class AnimalView(MethodView):
         }
     })
     def get(self,animal_id=None):
+        # auth_header = request.headers.get('Authorization')
+        # if auth_header and auth_header.startswith("Bearer "):
+        #     token = auth_header.split(" ")[1]
+        #     # You can validate the token here
+        #     return jsonify({"message": "Token is valid", "token": token})
+        # return jsonify({"message": "Missing or invalid token"}), 401
         fields = ['id', 'name', 'species', 'age', 'special_requirement']
         if animal_id is None:
             animals = AnimalModel.query.all()
