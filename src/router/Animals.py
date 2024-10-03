@@ -71,7 +71,7 @@ class AnimalView(MethodView):
             }
         }
     })
-    def get(self,animal_id):
+    def get(self,animal_id=None):
         fields = ['id', 'name', 'species', 'age', 'special_requirement']
         if animal_id is None:
             animals = AnimalModel.query.all()

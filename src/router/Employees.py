@@ -75,7 +75,7 @@ class EmployeeView(MethodView):
             }
         }
     })
-    def get(self, employee_id):
+    def get(self, employee_id=None):
         fields = ['id','name', 'email', 'phone', 'role', 'schedule']
         if employee_id is None:
             employees = EmployeeModel.query.all()
