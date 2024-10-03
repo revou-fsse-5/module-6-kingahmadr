@@ -9,7 +9,17 @@ from src.router.Animals import AnimalView, EmployeeView
 from src.router.Swagger import SwaggerView
 
 app = Flask(__name__)
-swagger = Swagger(app)
+# swagger = Swagger(app)
+# Create an APISpec
+SWAGGER_TEMPLATE = {"securityDefinitions": {"APIKeyHeader": {"type": "apiKey", "name": "x-access-token", "in": "header"}}}
+
+app.config['SWAGGER'] = {
+    'title': 'My API',
+    'uiversion': 3,
+    "specs_route": "/swagger/"
+}
+swagger = Swagger(app, template= SWAGGER_TEMPLATE)
+# app.config.from_object(config.Config)
 load_dotenv()
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://postgres.rxagpymjyxdlnaweylcz:{os.getenv('PASSWORD')}@aws-0-us-east-1.pooler.supabase.com:6543/postgres"

@@ -2,10 +2,10 @@ from flask.views import MethodView
 from flask import jsonify, request
 from flasgger import swag_from
 from src.models.Models import db, AnimalModel
-
 class AnimalView(MethodView):
     @swag_from({
         'tags': ['Animal'],
+        # 'security': [ 'Bearer': [] ],
         'parameters': [
             {
                 'name': 'animal_id',
