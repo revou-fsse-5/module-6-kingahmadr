@@ -3,11 +3,15 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from src.models.Models import db
+from flasgger import Swagger
 
-from src.router.Routes import AnimalView, EmployeeView
+from src.router.Animals import AnimalView
+from src.router.Employees import EmployeeView
+from src.router.Swagger import SwaggerView
 
 app = Flask(__name__)
-# load_dotenv()
+swagger = Swagger(app)
+load_dotenv()
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://postgres.rxagpymjyxdlnaweylcz:{os.getenv('PASSWORD')}@aws-0-us-east-1.pooler.supabase.com:6543/postgres"
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('USER_DB')}:{os.getenv('PASSWORD_DB')}@{os.getenv('HOST_DB')}:{os.getenv('PORT_DB')}/{os.getenv('DBNAME')}"
@@ -30,6 +34,11 @@ app.add_url_rule('/v2/employee/<int:employee_id>', view_func=employee_view, meth
 app.add_url_rule('/v2/employee/add', view_func=employee_view, methods=['POST'])
 app.add_url_rule('/v2/employee/edit/<int:employee_id>', view_func=employee_view, methods=['PUT'])
 app.add_url_rule('/v2/employee/delete/<int:employee_id>', view_func=employee_view, methods=['DELETE'])
+
+swagger_view = SwaggerView.as_view('swagger_view')
+app.add_url_rule('/v2/swagger', view_func=swagger_view, methods=['GET'])
+
+
 
 @app.route('/')
 def hello_world():

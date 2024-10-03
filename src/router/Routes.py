@@ -1,11 +1,53 @@
 from flask.views import MethodView
 from flask import jsonify, request
+from flasgger import swag_from
 from src.models.Models import db, AnimalModel, EmployeeModel
 
 class AnimalView(MethodView):
-
-    def get(self, animal_id):
+    @swag_from({
+        'parameters': [
+            {
+                'name': 'animal_id',  
+                'in': 'query',
+                'type': 'integer',  
+                'required': False,
+                'description': 'Query the animal list by animal_id'
+            }
+        ],
+        'responses': {
+            200: {
+                'description': 'Get animal list',
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'greeting': {
+                            'type': 'string',
+                            'example': 'Animal list'
+                        }
+                    }
+                }
+            }
+        }
+    })
+    def get(self,animal_id):
+        # animal_id = request.args.get('animal_id')
+        animal_params = request.args.get('animal_id')
         fields = ['id', 'name', 'species', 'age', 'special_requirement']
+
+        if animal_params:    
+            if animal_params is None:
+                animals = AnimalModel.query.all()
+
+                results = [{field: getattr(animal, field) for field in fields} for animal in animals]
+                return jsonify({"count": len(results), "Animals": results})
+            else:
+                animal = AnimalModel.query.get(animal_params)
+                if not animal:
+                    return jsonify({"error": "Animal not found"}), 404
+
+                animal_data = {field: getattr(animal, field) for field in fields}
+                return jsonify(animal_data)
+            
         if animal_id is None:
             animals = AnimalModel.query.all()
 
@@ -19,6 +61,88 @@ class AnimalView(MethodView):
             animal_data = {field: getattr(animal, field) for field in fields}
             return jsonify(animal_data)
     
+    @swag_from({
+        'parameters': [
+            {
+                'name': 'body',
+                'in': 'body',
+                'required': True,
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'name': {
+                            'type': 'string',
+                            'description': 'Name of the animal',
+                            'example': 'Leo'
+                        },
+                        'species': {
+                            'type': 'string',
+                            'description': 'Species of the animal',
+                            'example': 'Lion'
+                        },
+                        'age': {
+                            'type': 'integer',
+                            'description': 'Age of the animal',
+                            'example': 5
+                        },
+                        'special_requirement': {
+                            'type': 'string',
+                            'description': 'Any special requirements the animal has',
+                            'example': 'Needs a large cage'
+                        }
+                    },
+                    'required': ['name', 'species', 'age']  # Required fields
+                }
+            }
+        ],
+        'responses': {
+            201: {
+                'description': 'Animal data created successfully',
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'message': {
+                            'type': 'string',
+                            'example': 'Animal data created successfully'
+                        },
+                        'employee': {
+                            'type': 'object',
+                            'properties': {
+                                'name': {
+                                    'type': 'string',
+                                    'example': 'Leo'
+                                },
+                                'species': {
+                                    'type': 'string',
+                                    'example': 'Lion'
+                                },
+                                'age': {
+                                    'type': 'integer',
+                                    'example': 5
+                                },
+                                'special_requirement': {
+                                    'type': 'string',
+                                    'example': 'Needs a large cage'
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            400: {
+                'description': 'Missing required attribute',
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'error': {
+                            'type': 'string',
+                            'example': 'Missing Required attribute: name'
+                        }
+                    }
+                }
+            }
+        }
+    })
     def post(self):
         data = request.get_json()
 
