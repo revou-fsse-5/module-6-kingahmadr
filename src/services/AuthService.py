@@ -15,7 +15,7 @@ class Authentication:
             'exp': datetime.now(timezone.utc) + timedelta(hours=1)  # Token expires in 1 hour
         }
         token = jwt.encode(payload, JWT_SECRET, algorithm='HS256')
-        # print(f"Generated Token: {token}")  # Debugging
+        print(f"Generated Token: {token}")  # Debugging
         return token
     
     @staticmethod
@@ -27,7 +27,7 @@ class Authentication:
             # Check if token is passed in the Authorization header
             if 'Authorization' in request.headers:
                 auth_header = request.headers['Authorization']
-                # print(f"Authorization header: {auth_header}")  # Debugging
+                print(f"Authorization header: {auth_header}")  # Debugging
 
                 # Ensure the header starts with 'Bearer' and has two parts
                 parts = auth_header.split(" ")
@@ -42,7 +42,7 @@ class Authentication:
             try:
                 # Decode the token to get the user ID
                 data = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-                # print(f"Decoded token data: {data}")  # Debugging the decoded token
+                print(f"Decoded token data: {data}")  # Debugging the decoded token
 
                 current_user = User.query.get(data['user_id'])
                 if not current_user:
