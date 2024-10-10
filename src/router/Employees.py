@@ -2,6 +2,7 @@ from flask.views import MethodView
 from flask import jsonify, request
 from flasgger import swag_from
 from src.models.Models import db, EmployeeModel
+from src.services.AuthService import Authentication
 
 class EmployeeView(MethodView):
     @swag_from({
@@ -15,6 +16,7 @@ class EmployeeView(MethodView):
                 'description': 'ID of the employee to retrieve'
             }
         ],
+        'security': [{'Bearer': []}],  # Include Bearer token authentication
         'responses': {
             200: {
                 'description': 'Employees(s) retrieved successfully',
@@ -75,12 +77,13 @@ class EmployeeView(MethodView):
             }
         }
     })
-    def get(self, employee_id=None):
+    @Authentication.token_required
+    def get(self,current_user, employee_id=None):
         fields = ['id','name', 'email', 'phone', 'role', 'schedule']
         if employee_id is None:
             employees = EmployeeModel.query.all()
 
-            results = [{field: getattr(animal, field) for field in fields} for animal in employees]
+            results = [{field: getattr(employee, field) for field in fields} for employee in employees]
             return jsonify({"count": len(results), "Employees": results})
         else:
             employee = EmployeeModel.query.get(employee_id)
@@ -130,6 +133,7 @@ class EmployeeView(MethodView):
                 }
             }
         ],
+        'security': [{'Bearer': []}],  # Include Bearer token authentication
         'responses': {
             201: {
                 'description': 'employee data created successfully',
@@ -182,7 +186,8 @@ class EmployeeView(MethodView):
             }
         }
     })
-    def post(self):
+    @Authentication.token_required
+    def post(self, current_user):
         data = request.get_json()
 
         fields = ['name', 'email', 'phone', 'role', 'schedule']
@@ -248,34 +253,39 @@ class EmployeeView(MethodView):
                 }
             }
         ],
+        'security': [{'Bearer': []}],  # Include Bearer token authentication
         'responses': {
             200: {
-                'description': 'Animal updated successfully',
+                'description': 'Employee updated successfully',
                 'schema': {
                     'type': 'object',
                     'properties': {
                         'message': {
                             'type': 'string',
-                            'example': 'Animal updated successfully'
+                            'example': 'Employee updated successfully'
                         },
-                        'animal': {
+                        'employee': {
                             'type': 'object',
                             'properties': {
                                 'name': {
                                     'type': 'string',
-                                    'example': 'Leo'
+                                    'description': 'Name of the employee',
+                                    'example': 'Jonathan'
                                 },
-                                'species': {
+                                'email': {
                                     'type': 'string',
-                                    'example': 'Lion'
+                                    'description': 'Species of the employee',
+                                    'example': 'jonathan@email.com'
                                 },
-                                'age': {
-                                    'type': 'integer',
-                                    'example': 5
-                                },
-                                'special_requirement': {
+                                'phone': {
                                     'type': 'string',
-                                    'example': 'Needs a large cage'
+                                    'description': 'Phone of the employee',
+                                    'example': '000-233120-30123123'
+                                },
+                                'schedule': {
+                                    'type': 'string',
+                                    'description': 'Schedule of the staff',
+                                    'example': 'Night Shift'
                                 }
                             }
                         }
@@ -283,20 +293,21 @@ class EmployeeView(MethodView):
                 }
             },
             404: {
-                'description': 'Animal not found',
+                'description': 'Employee not found',
                 'schema': {
                     'type': 'object',
                     'properties': {
                         'error': {
                             'type': 'string',
-                            'example': 'Animal not found'
+                            'example': 'Employee not found'
                         }
                     }
                 }
             }
         }
     })
-    def put(self, employee_id):
+    @Authentication.token_required
+    def put(self,current_user, employee_id):
         employee = EmployeeModel.query.get(employee_id)
         if not employee:
             return jsonify({"error": "employee not found"}), 404
@@ -315,6 +326,7 @@ class EmployeeView(MethodView):
             "message": "employee updated successfully",
             "employee": employee_data,
         })
+    
     @swag_from({
         'tags': ['Employee'],
         'parameters': [
@@ -323,9 +335,10 @@ class EmployeeView(MethodView):
                 'in': 'path',
                 'type': 'integer',
                 'required': True,
-                'description': 'ID of the animal to delete'
+                'description': 'ID of the employee to delete'
             }
         ],
+        'security': [{'Bearer': []}],  # Include Bearer token authentication
         'responses': {
             200: {
                 'description': 'Employee deleted successfully',
@@ -353,7 +366,8 @@ class EmployeeView(MethodView):
             }
         }
     })
-    def delete(self, employee_id):
+    @Authentication.token_required
+    def delete(self,current_user, employee_id):
         employee = EmployeeModel.query.get(employee_id)
         if not employee:
             return jsonify({"error": "employee not found"}), 404

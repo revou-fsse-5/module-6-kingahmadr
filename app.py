@@ -8,29 +8,49 @@ from flasgger import Swagger
 from src.router.Animals import AnimalView
 from src.router.Employees import EmployeeView
 from src.router.Swagger import SwaggerView
+from src.router.Auth import AuthView
+from src.router.Register import RegisterView
 
 app = Flask(__name__)
-swagger = Swagger(app)
-# Swagger config for securityDefinitions
-# app.config['SWAGGER'] = {
-#     'securityDefinitions': {
-#         'Bearer': {
-#             'type': 'apiKey',
-#             'name': 'Authorization',
-#             'in': 'header',
-#             'description': 'Enter JWT with **Bearer** prefix, e.g., "Bearer {token}"'
-#         }
-#     },
-#     'security': [
-#         {
-#             'Bearer': []
-#         }
-#     ]
-# }
+# Swagger configuration for securityDefinitions
+swagger_config = {
+    "swagger": "2.0",
+    "title": "Your API Title",
+    "description": "API documentation with JWT authentication",
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": 'JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"'
+        }
+    },
+    "security": [
+        {
+            "Bearer": []
+        }
+    ],
+    # Include the 'specs' key to resolve KeyError
+    "specs": [
+        {
+            "endpoint": 'apispec_1',
+            "route": '/apispec_1.json',
+            "rule_filter": lambda rule: True,  # all in
+            "model_filter": lambda tag: True,  # all in
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/apidocs/",  # URL for accessing the Swagger UI
+    # Add a headers key to prevent TypeError
+    "headers": []
+}
+
+swagger = Swagger(app, config=swagger_config)
 load_dotenv()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('USER_DB')}:{os.getenv('PASSWORD_DB')}@{os.getenv('HOST_DB')}:{os.getenv('PORT_DB')}/{os.getenv('DBNAME')}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 
 # Initialize the database and migration
 db.init_app(app)
@@ -46,6 +66,14 @@ app.add_url_rule('/v2/employee/<int:employee_id>', view_func=employee_view, meth
 
 swagger_view = SwaggerView.as_view('swagger_view')
 app.add_url_rule('/v2/swagger', view_func=swagger_view, methods=['GET'])
+
+auth_view = AuthView.as_view('auth_view')
+app.add_url_rule('/v2/login', view_func=auth_view, methods=['POST'])
+
+register_view = RegisterView.as_view('register_view')
+app.add_url_rule('/v2/register', view_func=register_view, methods=['POST'])
+
+
 
 
 
