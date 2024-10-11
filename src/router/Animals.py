@@ -1,7 +1,8 @@
 from flask.views import MethodView
 from flask import jsonify, request
 from flasgger import swag_from
-from src.models.Models import db, AnimalModel
+from src.models.Models import AnimalModel
+from src.config.settings import db
 from src.services.AuthService import Authentication
 class AnimalView(MethodView):
     @swag_from({
@@ -81,7 +82,7 @@ class AnimalView(MethodView):
             results = [{field: getattr(animal, field) for field in fields} for animal in animals]
             return jsonify({"count": len(results), "Animals": results})
         else:
-            animal = AnimalModel.query.get(animal_id)
+            animal = db.session.get(AnimalModel, animal_id)
             if not animal:
                 return jsonify({"error": "Animal not found"}), 404
 
@@ -290,7 +291,7 @@ class AnimalView(MethodView):
     })
     @Authentication.token_required
     def put(self, current_user, animal_id):
-        animal = AnimalModel.query.get(animal_id)
+        animal = db.session.get(AnimalModel, animal_id)
         if not animal:
             return jsonify({"error": "Animal not found"}), 404
         
@@ -351,7 +352,7 @@ class AnimalView(MethodView):
     })
     @Authentication.token_required
     def delete(self,current_user, animal_id):
-        animal = AnimalModel.query.get(animal_id)
+        animal = db.session.get(AnimalModel, animal_id)
         if not animal:
             return jsonify({"error": "Animal not found"}), 404
 
