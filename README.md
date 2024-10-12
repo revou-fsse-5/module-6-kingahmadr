@@ -12,3 +12,10 @@
 
 ![swagger snippet 2](ReadME-img/swagger2.png)
 
+## Add pytest and converage unit testing
+
+![pytest snippet 1](ReadME-img/pytest1.png)
+
+![pytest snippet 2](ReadME-img/pytest2.png)
+
+
