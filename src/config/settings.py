@@ -66,6 +66,7 @@ def create_app(config_name=None):
     from src.router.Animals import AnimalView
     from src.router.AnimalTest import AnimalViewTest
     from src.router.Employees import EmployeeView
+    from src.router.EmployeeTest import EmployeeViewTest
     from src.router.Swagger import SwaggerView
     from src.router.Auth import AuthView
     from src.router.Register import RegisterView
@@ -90,6 +91,10 @@ def create_app(config_name=None):
     animal_view_test = AnimalViewTest.as_view('animal_view_test')
     app.add_url_rule('/v2/test/animal', view_func=animal_view_test, methods=['GET', 'POST'])
     app.add_url_rule('/v2/test/animal/<int:animal_id>', view_func=animal_view_test, methods=['GET','DELETE', 'PUT'])
+
+    employee_view_test = EmployeeViewTest.as_view('employee_view_test')
+    app.add_url_rule('/v2/test/employee', view_func=employee_view_test, methods=['GET', 'POST'])
+    app.add_url_rule('/v2/test/employee/<int:employee_id>', view_func=employee_view_test, methods=['GET','DELETE', 'PUT'])
     
     @app.route('/')
     def hello_from_api():

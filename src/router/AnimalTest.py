@@ -1,9 +1,7 @@
 from flask.views import MethodView
 from flask import jsonify, request
-from flasgger import swag_from
 from src.models.Models import AnimalTestModel
 from src.config.settings import db
-from src.services.AuthService import Authentication
 
 class AnimalViewTest(MethodView):
     def get(self, animal_id=None):

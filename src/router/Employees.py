@@ -308,7 +308,7 @@ class EmployeeView(MethodView):
     })
     @Authentication.token_required
     def put(self,current_user, employee_id):
-        employee = EmployeeModel.query.get(employee_id)
+        employee = db.session.get(EmployeeModel, employee_id)
         if not employee:
             return jsonify({"error": "employee not found"}), 404
         
@@ -368,7 +368,7 @@ class EmployeeView(MethodView):
     })
     @Authentication.token_required
     def delete(self,current_user, employee_id):
-        employee = EmployeeModel.query.get(employee_id)
+        employee = db.session.get(EmployeeModel, employee_id)
         if not employee:
             return jsonify({"error": "employee not found"}), 404
 
