@@ -1,7 +1,40 @@
 import pytest
-from unittest.mock import patch
-from src.models.Models import AnimalTestModel, EmployeeTestModel
+import jwt
+import os
+from unittest.mock import patch, MagicMock
+from src.models.Models import AnimalTestModel, EmployeeTestModel, User
 from src.config.settings import create_app, db
+from datetime import datetime, timedelta, timezone
+from flask import request
+
+# Mock environment variable
+os.environ['JWT_SECRET'] = 'test_secret_key'
+
+@pytest.fixture
+def mock_user():
+    # This fixture will mock a user object
+    user = MagicMock()
+    user.id = 1
+    return user
+
+@pytest.fixture
+def mock_request_headers(mocker):
+    # This fixture will mock the request object with a valid token
+    mocker.patch('src.services.AuthService.request')  # Adjust the import path
+    request.headers = {
+        'Authorization': 'Bearer test_token'
+    }
+
+@pytest.fixture
+def mock_jwt_token(mock_user):
+    # Generate a mock JWT token for the user
+    payload = {
+        'user_id': mock_user.id,
+        'exp': datetime.now(timezone.utc) + timedelta(hours=1)
+    }
+    return jwt.encode(payload, os.getenv('JWT_SECRET'), algorithm='HS256')
+
+
 
 @pytest.fixture
 def admin_username():

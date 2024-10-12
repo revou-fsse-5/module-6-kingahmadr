@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import jsonify, request
 from src.models.Models import User
+from src.config.settings import db
 
 class Authentication:
 
@@ -44,7 +45,8 @@ class Authentication:
                 data = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
                 print(f"Decoded token data: {data}")  # Debugging the decoded token
 
-                current_user = User.query.get(data['user_id'])
+                # current_user = User.query.get(data['user_id'])
+                current_user = db.session.get(User, data['user_id'])
                 if not current_user:
                     raise ValueError("User not found")
             except jwt.ExpiredSignatureError:
