@@ -41,7 +41,7 @@ jobs:
       env:
         DATABASE_URL: ${{ secrets.DB_URI }}  # Ensure this is securely stored in GitHub Secrets
       run: |
-        poetry run pytest --cov --disable-warnings
+        poetry run pytest -s -vvv --cov --cov-fail-under=70 --cov-report=term-missing
 
     - name: Upload pytest results
       if: always()
