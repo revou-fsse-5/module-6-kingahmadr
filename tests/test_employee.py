@@ -18,7 +18,7 @@ def test_get_all_employees(client, generate_fake_employees):
 
 def test_get_employee_by_id(client, generate_fake_employees):
     """Test retrieving an employee by its ID via GET /v2/test/employee<id>"""
-    robert = generate_fake_employees[0]  # Get the first employee (Lion)
+    robert = generate_fake_employees[0]  # Get the first employee (robert)
     response = client.get(f'/v2/test/employee/{robert.id}')
     assert response.status_code == 200
 
