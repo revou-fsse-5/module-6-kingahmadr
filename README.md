@@ -14,8 +14,12 @@
 
 ## Add pytest and converage unit testing
 
-![pytest snippet 1](ReadME-img/pytest1.png)
+![pytest snippet 1](ReadME-img/unitest1.png)
 
-![pytest snippet 2](ReadME-img/pytest2.png)
+![pytest snippet 2](ReadME-img/unitest2.png)
+
+![pytest coverage](ReadME-img/coverage1.png)
+
+
 
 
