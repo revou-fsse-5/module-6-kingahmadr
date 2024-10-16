@@ -1,0 +1,8 @@
+[run]
+source = src
+omit = 
+        __init__.py, 
+        Register.py, 
+        Auth.py, skip*.py, 
+        app.py, src/config/*, 
+        conftest.py

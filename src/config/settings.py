@@ -14,7 +14,7 @@ load_dotenv()
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app(config_name=None):
+def create_app(settings_conf=None):
     """Application factory to create a Flask app instance."""
     app = Flask(__name__)
 
@@ -54,8 +54,11 @@ def create_app(config_name=None):
    
     # Load configuration
     swagger = Swagger(app, config=swagger_config)
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('USER_DB')}:{os.getenv('PASSWORD_DB')}@{os.getenv('HOST_DB')}:{os.getenv('PORT_DB')}/{os.getenv('DBNAME')}"
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    # app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{os.getenv('USER_DB')}:{os.getenv('PASSWORD_DB')}@{os.getenv('HOST_DB')}:{os.getenv('PORT_DB')}/{os.getenv('DBNAME')}"
+    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    os.environ.setdefault("FLASK_SETTINGS_MODULE", "src.config.dev")
+    conf = settings_conf or os.getenv("FLASK_SETTINGS_MODULE")
+    app.config.from_object(conf)
     app.config['DEBUG'] = True
 
     # Initialize the app with extensions
@@ -64,10 +67,7 @@ def create_app(config_name=None):
 
     # Import view
     from src.router.Animals import AnimalView
-    from src.router.AnimalTest import AnimalViewTest
     from src.router.Employees import EmployeeView
-    from src.router.EmployeeTest import EmployeeViewTest
-    from src.router.Swagger import SwaggerView
     from src.router.Auth import AuthView
     from src.router.Register import RegisterView
 
@@ -79,22 +79,12 @@ def create_app(config_name=None):
     app.add_url_rule('/v2/employee', view_func=employee_view, methods=['GET', 'POST'])
     app.add_url_rule('/v2/employee/<int:employee_id>', view_func=employee_view, methods=['GET', 'DELETE', 'PUT'])
 
-    swagger_view = SwaggerView.as_view('swagger_view')
-    app.add_url_rule('/v2/swagger', view_func=swagger_view, methods=['GET'])
-
     auth_view = AuthView.as_view('auth_view')
     app.add_url_rule('/v2/login', view_func=auth_view, methods=['POST'])
 
     register_view = RegisterView.as_view('register_view')
     app.add_url_rule('/v2/register', view_func=register_view, methods=['POST'])
 
-    animal_view_test = AnimalViewTest.as_view('animal_view_test')
-    app.add_url_rule('/v2/test/animal', view_func=animal_view_test, methods=['GET', 'POST'])
-    app.add_url_rule('/v2/test/animal/<int:animal_id>', view_func=animal_view_test, methods=['GET','DELETE', 'PUT'])
-
-    employee_view_test = EmployeeViewTest.as_view('employee_view_test')
-    app.add_url_rule('/v2/test/employee', view_func=employee_view_test, methods=['GET', 'POST'])
-    app.add_url_rule('/v2/test/employee/<int:employee_id>', view_func=employee_view_test, methods=['GET','DELETE', 'PUT'])
     
     @app.route('/')
     def hello_from_api():

@@ -2,7 +2,7 @@ import pytest
 import jwt
 import os
 from unittest.mock import patch, MagicMock
-from src.models.Models import AnimalTestModel, EmployeeTestModel, User
+from src.models.Models import AnimalModel, EmployeeModel
 from src.config.settings import create_app, db
 from datetime import datetime, timedelta, timezone
 from flask import request
@@ -42,7 +42,7 @@ def admin_username():
 
 @pytest.fixture(scope="module")
 def app():
-    app = create_app()
+    app = create_app("src.config.testing")
     with app.app_context():
         yield app
 
@@ -59,23 +59,23 @@ def test_db(app):
 @pytest.fixture
 def generate_fake_animals(test_db):
     # Bersihin data dulu sebelum di generate animal dari test
-    db.session.query(AnimalTestModel).delete()  # Hapus semua data animal di db
+    db.session.query(AnimalModel).delete()  # Hapus semua data animal di db
     db.session.commit()
 
-    lion = AnimalTestModel(
+    lion = AnimalModel(
         name="Lion",
         species="Panthera leo",
         age=5,
         special_requirement="Requires open space"
     )
-    elephant = AnimalTestModel(
+    elephant = AnimalModel(
         name="Elephant",
         species="Loxodonta africana",
         age=10,
         special_requirement="Requires a lot of water"
     )
     
-    cheetah = AnimalTestModel(
+    cheetah = AnimalModel(
         name="Cheetah",
         species="Acinonyx jubatus",
         age=4,
@@ -92,24 +92,24 @@ def generate_fake_animals(test_db):
 @pytest.fixture
 def generate_fake_employees(test_db):
     # Bersihin data dulu sebelum di generate animal dari test
-    db.session.query(EmployeeTestModel).delete()  # Hapus semua data animal di db
+    db.session.query(EmployeeModel).delete()  # Hapus semua data animal di db
     db.session.commit()
 
-    robert = EmployeeTestModel(
+    robert = EmployeeModel(
         name="robert",
         email="robert@email.com",
         phone="3213900--321313-3123",
         role="Second Gatekeeper",
         schedule="Night Shift"
     )
-    junior = EmployeeTestModel(
+    junior = EmployeeModel(
         name="junior",
         email="junior@email.com",
         phone="3213900--321313-3123",
         role="Second Gatekeeper",
         schedule="Night Shift"
     )
-    edward = EmployeeTestModel(
+    edward = EmployeeModel(
         name="edward",
         email="edward@email.com",
         phone="3213900--321313-3123",

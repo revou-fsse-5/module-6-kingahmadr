@@ -86,7 +86,7 @@ class EmployeeView(MethodView):
             results = [{field: getattr(employee, field) for field in fields} for employee in employees]
             return jsonify({"count": len(results), "Employees": results})
         else:
-            employee = EmployeeModel.query.get(employee_id)
+            employee = db.session.get(EmployeeModel, employee_id)
             if not employee:
                 return jsonify({"error": "Employee not found"}), 404
 
